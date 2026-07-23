@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Elastic.Clients.Elasticsearch;
 using InkPulse.Worker.Features.Book.Documents;
+using InkPulse.Worker.Infrastructure.Constants;
 using InkPulse.Worker.Infrastructure.Persistence;
 using Microsoft.Extensions.Logging;
 using Quartz;
@@ -43,15 +44,15 @@ namespace InkPulse.Worker.Features.Book.Jobs
                     WHERE fs.is_deleted = false AND fs.is_active = true AND fsi.is_deleted = false
                       AND fs.start_date <= @now AND fs.end_date > @now";
 
-                var activeSales = await _dapperRepository.QueryAsync<FlashSaleItemDbDto>(activeSalesSql, new { now });
-                var activeSalesMap = activeSales.ToDictionary(s => s.book_edition_id, s => s);
+                var activeSales = (await _dapperRepository.QueryAsync<FlashSaleItemDbDto>(activeSalesSql, new { now })).ToList();
+                var activeSalesMap = activeSales.ToDictionary(item => item.book_edition_id, item => item);
 
-                // 2. Search Elasticsearch for all documents currently carrying a flash sale item id
+                // 2. Fetch all books from Elasticsearch that currently have flash sale fields set
                 var esActiveDocs = new List<BookEditionDocument>();
                 try
                 {
                     var esResponse = await _elasticClient.SearchAsync<BookEditionDocument>(s => s
-                        .Index("inkpulse_books")
+                        .Index(ElasticsearchIndexConstant.Books)
                         .Query(q => q.Exists(e => e.Field(f => f.FlashSaleItemId)))
                         .Size(1000),
                         context.CancellationToken
@@ -114,7 +115,7 @@ namespace InkPulse.Worker.Features.Book.Jobs
                         try
                         {
                             var updateResponse = await _elasticClient.UpdateAsync<BookEditionDocument, object>(
-                                "inkpulse_books",
+                                ElasticsearchIndexConstant.Books,
                                 update.Id,
                                 u => u.Doc(new
                                 {

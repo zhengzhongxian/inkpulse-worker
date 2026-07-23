@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Elastic.Clients.Elasticsearch;
 using InkPulse.Worker.Features.Book.Documents;
 using InkPulse.Worker.Features.Book.Messages;
+using InkPulse.Worker.Infrastructure.Constants;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -28,7 +29,7 @@ namespace InkPulse.Worker.Features.Book.Consumers
             try
             {
                 var response = await _elasticClient.UpdateAsync<BookEditionDocument, object>(
-                    "inkpulse_books",
+                    ElasticsearchIndexConstant.Books,
                     message.BookEditionId.ToString(),
                     u => u.Doc(new
                     {

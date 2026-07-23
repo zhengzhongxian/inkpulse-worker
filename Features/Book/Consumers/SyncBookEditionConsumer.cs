@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Elastic.Clients.Elasticsearch;
 using InkPulse.Worker.Features.Book.Documents;
 using InkPulse.Worker.Features.Book.Messages;
+using InkPulse.Worker.Infrastructure.Constants;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -32,7 +33,7 @@ namespace InkPulse.Worker.Features.Book.Consumers
                 {
                     var deleteResponse = await _elasticClient.DeleteAsync<BookEditionDocument>(
                         message.Id.ToString(), 
-                        d => d.Index("inkpulse_books"), 
+                        d => d.Index(ElasticsearchIndexConstant.Books), 
                         context.CancellationToken
                     );
 
@@ -54,7 +55,7 @@ namespace InkPulse.Worker.Features.Book.Consumers
                     {
                         var existingDocResponse = await _elasticClient.GetAsync<BookEditionDocument>(
                             message.Id.ToString(),
-                            d => d.Index("inkpulse_books"),
+                            d => d.Index(ElasticsearchIndexConstant.Books),
                             context.CancellationToken
                         );
                         if (existingDocResponse.Found && existingDocResponse.Source != null)
@@ -111,7 +112,7 @@ namespace InkPulse.Worker.Features.Book.Consumers
 
                     var indexResponse = await _elasticClient.IndexAsync(
                         doc, 
-                        i => i.Index("inkpulse_books"), 
+                        i => i.Index(ElasticsearchIndexConstant.Books), 
                         context.CancellationToken
                     );
 

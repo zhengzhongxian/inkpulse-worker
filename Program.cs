@@ -326,8 +326,9 @@ try
     // Apply database migrations on startup
     DatabaseInitializer.ApplyMigrations(host.Services);
 
-    // Initialize Elasticsearch indices and mappings on startup
-    await ElasticsearchInitializer.InitializeIndicesAsync(host.Services);
+    // Initialize Elasticsearch indices and mappings on startup with a 30-second timeout
+    using var esCts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(30));
+    await ElasticsearchInitializer.InitializeIndicesAsync(host.Services, esCts.Token);
 
     await host.RunAsync();
 }

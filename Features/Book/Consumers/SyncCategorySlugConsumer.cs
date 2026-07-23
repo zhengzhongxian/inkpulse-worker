@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Elastic.Clients.Elasticsearch;
 using InkPulse.Worker.Features.Book.Documents;
 using InkPulse.Worker.Features.Book.Messages;
+using InkPulse.Worker.Infrastructure.Constants;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -39,7 +40,7 @@ namespace InkPulse.Worker.Features.Book.Consumers
                 {
                     // If deleted, remove oldSlug from category_slugs array
                     response = await _elasticClient.UpdateByQueryAsync<BookEditionDocument>(
-                        "inkpulse_books",
+                        ElasticsearchIndexConstant.Books,
                         u => u
                             .Query(q => q
                                 .Term(t => t
@@ -64,7 +65,7 @@ namespace InkPulse.Worker.Features.Book.Consumers
                     }
 
                     response = await _elasticClient.UpdateByQueryAsync<BookEditionDocument>(
-                        "inkpulse_books",
+                        ElasticsearchIndexConstant.Books,
                         u => u
                             .Query(q => q
                                 .Term(t => t

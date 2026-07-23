@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Elastic.Clients.Elasticsearch;
 using InkPulse.Worker.Features.Book.Documents;
 using InkPulse.Worker.Features.Book.Messages;
+using InkPulse.Worker.Infrastructure.Constants;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -33,7 +34,7 @@ namespace InkPulse.Worker.Features.Book.Consumers
                 {
                     // If deleted, set publisher_name and publisher_id to null for all book editions matching publisher_id
                     response = await _elasticClient.UpdateByQueryAsync<BookEditionDocument>(
-                        "inkpulse_books",
+                        ElasticsearchIndexConstant.Books,
                         u => u
                             .Query(q => q
                                 .Term(t => t
@@ -51,7 +52,7 @@ namespace InkPulse.Worker.Features.Book.Consumers
                 {
                     // If updated, set publisher_name to the new name for all book editions matching publisher_id
                     response = await _elasticClient.UpdateByQueryAsync<BookEditionDocument>(
-                        "inkpulse_books",
+                        ElasticsearchIndexConstant.Books,
                         u => u
                             .Query(q => q
                                 .Term(t => t
