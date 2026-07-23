@@ -1,0 +1,38 @@
+# Build results & compiled binaries
+[Dd]ebug/
+[Dd]ebugPS/
+[Rr]elease/
+[Rr]eleasePS/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bin/
+obj/
+
+# Logs & Output
+[Ll]ogs/
+*.log
+*.txt
+
+# Configuration files with secrets
+appsettings.json
+appsettings.*.json
+!appsettings.example.json
+.env
+.env.*
+*.key
+*.pem
+
+# Rider / Visual Studio / VS Code settings & caches
+.idea/
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS files
+.DS_Store
+Thumbs.db
